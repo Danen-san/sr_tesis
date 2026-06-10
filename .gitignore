@@ -1,0 +1,121 @@
+# -----------------------
+# Python / Django
+# -----------------------
+# Entorno virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Archivos de caché y bytecode
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Base de datos local (si no quieres subirla)
+db.sqlite3
+
+# Archivos de configuración local
+.env
+*.local
+
+# Archivos de logs
+*.log
+
+# Tests y coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# -----------------------
+# Flutter / Dart
+# -----------------------
+# Directorios generados por Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+.pub-cache/
+build/
+
+# Archivos generados (pueden variar, algunos sí se versionan)
+*.lock   # Si prefieres no versionar pubspec.lock (generalmente sí se versiona en apps, pero lo dejo opcional)
+# Si quieres versionar pubspec.lock, comenta la línea de arriba y usa:
+# !pubspec.lock
+
+# Archivo de metadatos de Flutter (se regenera siempre)
+.metadata
+
+# Archivos de caché de análisis de Dart
+.analysis_options_linter.yaml
+
+# -----------------------
+# IDEs y editores
+# -----------------------
+# IntelliJ / Android Studio (usado por Flutter)
+.idea/
+*.iml
+*.iws
+out/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Visual Studio (Windows)
+.vs/
+
+# Sublime Text
+*.sublime-*
+
+# -----------------------
+# Archivos específicos del sistema
+# -----------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# -----------------------
+# Plataformas específicas (Flutter)
+# -----------------------
+# Android (local.properties contiene rutas locales)
+frontend/android/local.properties
+frontend/android/*.iml
+frontend/android/.gradle/
+
+# iOS (CocoaPods)
+frontend/ios/Pods/
+frontend/ios/Podfile.lock
+frontend/ios/.symlinks/
+frontend/ios/Flutter/Generated.xcconfig
+
+# macOS, Linux, Windows - solo ignorar builds, no el código fuente
+frontend/macos/Flutter/GeneratedPluginRegistrant.*
+frontend/linux/flutter/ephemeral/
+frontend/windows/flutter/ephemeral/
+
+# -----------------------
+# Archivos temporales y de logs
+# -----------------------
+*.tmp
+*.swp
+*.swo
+*~
+
+# -----------------------
+# (Opcional) Archivos grandes o de respaldo
+# -----------------------
+*.zip
+*.tar.gz
+*.7z
+*.bak

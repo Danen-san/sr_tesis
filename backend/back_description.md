@@ -1,1 +1,0 @@
-En esta carpeta estara todo lo relacionado con el backend del sistema de recomendaciones de la tesis

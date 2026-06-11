@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'learning_path_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../providers/recommendation_provider.dart';
@@ -20,16 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Lista de las pantallas que conforman la navegación principal
   final List<Widget> _pages = [
     const HomeScreen(),
-    const Center(
-      child: Text(
-        "Pantalla de Progreso en construcción",
-        style: TextStyle(
-          fontSize: 18,
-          color: AppColors.navyBlue,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
+    LearningPathScreen(),
     const Center(
       child: Text(
         "Modo Offline en construcción",
@@ -50,6 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RecommendationProvider>().fetchRecommendations();
       context.read<RecommendationProvider>().fetchProfile();
+      context.read<RecommendationProvider>().fetchLearningPath();
     });
   }
 

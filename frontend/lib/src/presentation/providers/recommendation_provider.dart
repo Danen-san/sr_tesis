@@ -1,8 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../core/network/api_client.dart';
+import '../../data/models/learning_path_model.dart';
 import '../../data/models/recommendation_model.dart';
 
 class RecommendationProvider extends ChangeNotifier {
+  List<LearningPathNode> _learningPath = [];
+  bool _isLoadingPath = false;
+
+  List<LearningPathNode> get learningPath => _learningPath;
+  bool get isLoadingPath => _isLoadingPath;
+
   final ApiClient apiClient;
 
   double _progressPercentage = 0.0;
@@ -35,6 +45,30 @@ class RecommendationProvider extends ChangeNotifier {
     } catch (e) {
       _errorMessage = e.toString().replaceAll('HttpException: ', '');
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchLearningPath() async {
+    _isLoadingPath = true;
+    notifyListeners();
+
+    try {
+      // Ajusta la URL según tu configuración de Django
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/learning-path/'),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        _learningPath = data
+            .map((item) => LearningPathNode.fromJson(item))
+            .toList();
+      }
+    } catch (e) {
+      debugPrint("Error al cargar la ruta: $e");
+    } finally {
+      _isLoadingPath = false;
       notifyListeners();
     }
   }

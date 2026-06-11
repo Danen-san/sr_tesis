@@ -1,6 +1,5 @@
 from django.test import TestCase
 from recommendation.models import User, StudentProfile, LearningObject
-# Asumiendo que el motor está en un archivo engine.py o ia.py dentro de recommendation
 from recommendation.engine import HybridRecommendationEngine 
 
 class RecommendationEngineTests(TestCase):

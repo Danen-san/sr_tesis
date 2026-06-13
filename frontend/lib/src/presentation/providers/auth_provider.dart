@@ -1,5 +1,8 @@
 // lib/src/presentation/providers/auth_provider.dart
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../core/database/db_helper.dart';
 import '../../core/network/api_client.dart';
 import '../../data/models/user_model.dart';
@@ -58,6 +61,34 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchStudentProfile() async {
+    final String? token =
+        currentUser?.token; // Recupera el token guardado en el login
+
+    // Esta es la ruta exacta que mapeamos en tu urls.py
+    final Uri url = Uri.parse('http://127.0.0.1:8000/api/student/profile/');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Token $token', // Cabecera indispensable
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else {
+        debugPrint("[PROFILE API] Error al obtener datos: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("[PROFILE API] Error crítico de red: $e");
+      return null;
     }
   }
 

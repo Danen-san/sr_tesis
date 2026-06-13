@@ -1,7 +1,7 @@
 # C:\Users\Pc\Documents\UCI\sr_tesis\backend\recommendation\admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, StudentProfile, LearningObject, Recommendation
+from .models import User, StudentProfile, LearningObject, Recommendation, Topic
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
@@ -20,12 +20,27 @@ class StudentProfileAdmin(admin.ModelAdmin):  # <-- Corregido aquí
     search_fields = ['user__username', 'user__first_name', 'user__last_name']
 
 
+@admin.register(Topic)
+class TopicAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    search_fields = ('name',)
+
 @admin.register(LearningObject)
 class LearningObjectAdmin(admin.ModelAdmin):
-    list_display = ['title', 'topic', 'difficulty', 'created_at']
-    list_filter = ['difficulty', 'topic']
-    search_fields = ['title', 'description']
+    # 1. Cambiamos 'topic' por nuestra función personalizada 'get_topics'
+    list_display = ('title', 'resource_type', 'difficulty', 'get_topics')
+    
+    # 2. El filtro lateral ahora debe apuntar a la tabla relacional de temas
+    list_filter = ('resource_type', 'difficulty', 'topics')
+    
+    search_fields = ('title', 'description')
 
+    # 3. Función auxiliar para mostrar los temas como texto separado por comas en el panel
+    def get_topics(self, obj):
+        return ", ".join([t.name for t in obj.topics.all()])
+    
+    # Le ponemos un título limpio a la columna en el panel de Django
+    get_topics.short_description = 'Temas Evaluados'
 
 @admin.register(Recommendation)
 class RecommendationAdmin(admin.ModelAdmin):

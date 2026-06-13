@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../providers/auth_provider.dart';
-import 'dashboard_screen.dart';
+import 'splash_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,14 +27,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
+
     final authProvider = context.read<AuthProvider>();
+
     final success = await authProvider.login(
       _usernameController.text.trim(),
       _passwordController.text,
     );
+
     if (mounted && success) {
+      debugPrint(
+        "[LOGIN] Autenticación exitosa. Reiniciando ciclo de evaluación en el Splash...",
+      );
+      // Redirigimos al Splash para que abra Hive y verifique si es primera vez o va al Dashboard
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+        MaterialPageRoute(builder: (_) => const SplashScreen()),
       );
     }
   }
@@ -44,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FA), // Fondo neutro ligero
+      backgroundColor: const Color(0xFFF7F8FA),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -53,26 +60,27 @@ class _LoginScreenState extends State<LoginScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  // Logo
-                  Image.asset('assets/images/logo.png', height: 80, width: 80),
+                  const Icon(
+                    Icons.terminal_rounded,
+                    size: 80,
+                    color: Color(0xFF0B1F8F),
+                  ),
                   const SizedBox(height: 24),
-                  // Título principal
                   const Text(
                     "EduCode",
                     style: TextStyle(
                       fontSize: 52,
                       fontWeight: FontWeight.w900,
-                      color: AppColors.primaryBlue,
+                      color: Color(0xFF0B1F8F),
                     ),
                   ),
                   const Text(
                     "Acceso a la plataforma de gestión académica",
-                    style: TextStyle(fontSize: 20, color: AppColors.textGrey),
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
 
-                  // Contenedor blanco centralizado (La tarjeta de login)
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -98,16 +106,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _usernameController,
                           decoration: InputDecoration(
                             hintText: 'ejemplo.usuario',
-                            hintStyle: TextStyle(color: AppColors.textGrey),
                             prefixIcon: const Icon(Icons.person_outline),
-                            prefixStyle: TextStyle(color: AppColors.textGrey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: AppColors.textGrey,
-                              ),
                             ),
                           ),
+                          validator: (v) =>
+                              v!.isEmpty ? 'Campo requerido' : null,
                         ),
                         const SizedBox(height: 20),
                         const Text(
@@ -133,20 +138,22 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: AppColors.borderGrey,
-                              ),
                             ),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text('¿Olvidaste tu contraseña?'),
-                          ),
+                          validator: (v) =>
+                              v!.isEmpty ? 'Campo requerido' : null,
                         ),
                         const SizedBox(height: 24),
+                        if (authProvider.errorMessage != null) ...[
+                          Text(
+                            authProvider.errorMessage!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
                         SizedBox(
                           width: double.infinity,
                           height: 55,
@@ -155,26 +162,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? null
                                 : _handleLogin,
                             style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.primaryBlue,
+                              backgroundColor: const Color(0xFF0B1F8F),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('Iniciar Sesión'),
-                                SizedBox(width: 8),
-                                Icon(Icons.arrow_forward, size: 18),
-                              ],
-                            ),
+                            child: authProvider.isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Iniciar Sesión'),
+                                      SizedBox(width: 8),
+                                      Icon(Icons.arrow_forward, size: 18),
+                                    ],
+                                  ),
                           ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 40),
-                  // Footer de seguridad
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -185,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const Text(
                     "Universidad de las Ciencias Informáticas",
-                    style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
               ),

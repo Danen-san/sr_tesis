@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'resources_screen.dart';
 import 'learning_path_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -22,6 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _pages = [
     const HomeScreen(),
     LearningPathScreen(),
+    const ResourceScreen(topicId: 'conceptos_iniciales'),
     const Center(
       child: Text(
         "Modo Offline en construcción",

@@ -63,8 +63,13 @@ class TargetRecommendationsAPIView(APIView):
             'id', 'topic', 'difficulty', 'title', 'description'
         ))
         
+        if profile.weak_topics:
+            weak_list = [t.strip() for t in profile.weak_topics.split(',') if t.strip()]
+        else:
+            weak_list = []
+
         student_profile_data = {
-            'weak_topics': [t.name for t in profile.weak_topics.all()],
+            'weak_topics': weak_list,
             'current_risk': float(profile.academic_risk)
         }
 
@@ -148,6 +153,53 @@ class ConsumeRecommendationAPIView(APIView):
             'message': 'Perfil de estudiante actualizado correctamente.',
             'current_risk': profile.academic_risk
         }, status=status.HTTP_200_OK)
+
+
+# Añade este endpoint al final de tu views.py:
+
+class DiagnosticoInicialAPIView(APIView):
+    """
+    Cumplimiento de Requisito de Tesis: Procesa el diagnóstico inicial 
+    cognitivo del estudiante y parametriza su perfil de IA adaptativo.
+    """
+    permission_classes = [IsAuthenticated] # Protegido por Token
+
+    def post(self, request):
+        user = request.user
+        estilo_cognitivo = request.data.get('estilo_cognitivo')
+        matriz_conocimiento = request.data.get('matriz_conocimiento', {})
+        intereses = request.data.get('intereses', [])
+
+        if not estilo_cognitivo:
+            return Response(
+                {'error': 'El estilo cognitivo es requerido para el perfilamiento.'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 1. Obtener o crear el perfil de estudiante asociado al usuario de la UCI
+        profile, created = StudentProfile.objects.get_or_create(user=user)
+
+        # 2. Mapear y procesar las variables en el modelo de base de datos
+        # Guardamos los intereses y el estilo cognitivo (puedes adaptarlo a tus campos exactos)
+        profile.weak_topics = ", ".join(intereses) if intereses else ""
+        
+        # Seteamos valores iniciales de la tesis: Riesgo base en 0.0 y rendimiento según autoevaluación
+        profile.academic_risk = 0.0
+        profile.completed_modules = 0
+        
+        # Guardamos los cambios en PostgreSQL
+        profile.save()
+
+        debug_msg = f"Perfil del estudiante '{user.username}' parametrizado con éxito."
+        print(f"[IA ENGINE] {debug_msg}")
+
+        return Response({
+            'status': 'success',
+            'message': debug_msg,
+            'profile_created': created
+        }, status=status.HTTP_200_OK)
+
+
 class StudentProfileAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
